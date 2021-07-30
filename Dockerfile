@@ -17,4 +17,4 @@ COPY . .
 ENV FLASK_RUN_PORT=8088
 
 # RUN app.
-CMD gunicorn --workers 4 --bind $(HOST):$FLASK_RUN_PORT app:app
+CMD gunicorn --workers 2 --bind $(HOST):$FLASK_RUN_PORT app:app
