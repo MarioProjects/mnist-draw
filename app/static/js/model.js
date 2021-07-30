@@ -7,10 +7,10 @@ $(document).ready(function () {
         var canvas = document.getElementById('canvas_draw');
         var canvas_data = canvas.toDataURL();
 
-        // Make prediction by calling api /predictModel
+        // Make prediction by calling api /predict
         $.ajax({
             type: 'POST',
-            url: '/predictModel',
+            url: '/predict',
             data: canvas_data,
             contentType: false,
             cache: false,
@@ -33,6 +33,7 @@ $(document).ready(function () {
         var context = $canvas[0].getContext("2d");
         var canvas = document.getElementById('canvas_draw');
         context.clearRect(0, 0, canvas.width, canvas.height);
+        $("#number_info").text("");
     });
 
 });
@@ -44,8 +45,8 @@ var $canvas = $("canvas");
 var context = $canvas[0].getContext("2d");
 context.strokeStyle = color;
 context.lineJoin = "round";
-context.lineWidth = 34;
-context.globalAlpha = 0.73;
+context.lineWidth = 30;
+context.globalAlpha = 0.8;
 
 var lastEvent;
 var mouseDown = false;
