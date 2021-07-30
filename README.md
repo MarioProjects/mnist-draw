@@ -31,3 +31,12 @@ Note: For Free Heroku account only 500MB of space will be allocated, GPU version
 ![Example execution](static/imgs/example_execution.png)
 
 We have successfully called our Pytorch model and we can draw over a canvas and pass the images to our model :)
+
+### Run the Container
+
+```shell
+docker stop mnist-draw-app
+docker rm mnist-draw-app
+docker build -t mnist-draw-app:latest .
+docker run -d --network host --name mnist-draw-app mnist-draw-app
+```
