@@ -28,7 +28,6 @@ The Flask + Pytorch server can be started by running:
 
 Note: For Free Heroku account only 500MB of space will be allocated, GPU version of pytorch takes huge space. So, use CPU version of pytorch for Inference. 
 
-![Example execution](static/imgs/example_execution.png)
 
 We have successfully called our Pytorch model and we can draw over a canvas and pass the images to our model :)
 
