@@ -23,7 +23,7 @@ We created one endpoint service 'predictModel'. Firstly, we capture the draw inf
 ## Starting the Server
 The Flask + Pytorch server can be started by running:
 ```sh
- $ python app.py
+ $ flask run
 ```
 
 Note: For Free Heroku account only 500MB of space will be allocated, GPU version of pytorch takes huge space. So, use CPU version of pytorch for Inference. 

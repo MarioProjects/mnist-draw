@@ -133,3 +133,4 @@ dmypy.json
 
 # Dataset
 data/*
+app/static/user_data

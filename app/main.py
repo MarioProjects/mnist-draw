@@ -19,23 +19,27 @@ if not sys.warnoptions:
 """ --- IMPORT LIBRARIES --- """
 
 import numpy as np
-import pickle
-import pathlib
-import time
 import base64
 import torch
-from torch import nn, optim
+from torch import nn
 from torch.autograd.variable import Variable
-import torch.nn.functional as F
 import cv2
 from PIL import Image
 import io
+import uuid
+import pandas as pd
+import time
+from datetime import datetime
+import pytz
 
 from .static.models import models_interface
 
 main = Blueprint('main', __name__)
 
 CAT2CLASS = {0: "Male", 1: "Female"}
+USER_DATA_DIR = "app/static/user_data"
+os.makedirs(USER_DATA_DIR, exist_ok=True)
+DF_PATH = os.path.join(USER_DATA_DIR, "info.csv")
 
 """ -- MODEL LOAD -- """
 
@@ -58,12 +62,15 @@ SOFTMAX = nn.Softmax()
 @main.route('/', methods=['GET'])
 def index():
     # Main page
+    with open(os.path.join(USER_DATA_DIR, "access.txt"), "a") as myfile:
+        myfile.write(f"{datetime.now(tz=pytz.timezone('Europe/Madrid')).strftime('%Y-%m-%d %H:%M:%S')}\n")
     return render_template('index.html')
 
 
 @main.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'POST':
+        start_time = time.time()
         data_url = str(request.data)
 
         image_encoded = data_url.split(',')[1]
@@ -75,13 +82,31 @@ def predict():
         arr_small = torch.from_numpy(arr_small.transpose(2, 0, 1)).type('torch.FloatTensor')
         arr_small = arr_small.unsqueeze(0)
 
-        # We make the prediction of the current face
+        # Make the prediction of the current face
         with torch.no_grad():
             prediction = MODEL(Variable(arr_small).cpu())
         preds_classes = torch.argmax(prediction, dim=1)
         confianza = SOFTMAX(prediction)
-        print(prediction)
 
-        # We return to the browser what we find as a json object
+        # Saves the prediction in a file to latex inspect
+        filename = uuid.uuid4().hex
+        cv2.imwrite(os.path.join(USER_DATA_DIR, f'{filename}.png'), arr)
+        info = {str(clase):prob for clase, prob in enumerate(confianza.view(-1).cpu().numpy())}
+        info["file"] = filename
+        info["label"] = -1
+        info["execution"] = str(time.time() - start_time)
+
+        if os.path.isfile(DF_PATH):
+            df = pd.read_csv(DF_PATH)
+            df = df.append(info, ignore_index=True)
+        else:
+            df = pd.DataFrame(info, index=[0])
+        df.to_csv(DF_PATH, index=False)
+
+        # Return to the browser what we find as a json object
         return json.dumps({"number": preds_classes.item()})
-    return None
+    return json.dumps({'status': 'error', 'message': 'Bad request'})
+
+@main.route('/ping', methods=['GET', 'POST'])
+def ping():
+    return json.dumps({'result': 'mnist_draw_pong'})

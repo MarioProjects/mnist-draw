@@ -45,8 +45,8 @@ var $canvas = $("canvas");
 var context = $canvas[0].getContext("2d");
 context.strokeStyle = color;
 context.lineJoin = "round";
-context.lineWidth = 30;
-context.globalAlpha = 0.8;
+context.lineWidth = 27;
+context.globalAlpha = 1;
 
 var lastEvent;
 var mouseDown = false;
